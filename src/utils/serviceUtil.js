@@ -1,9 +1,11 @@
-const ApiError = require('../utils/ApiError');
+const ApiError = require('./ApiError');
+const logger = require('../config/logger');
 
-const ifDataExists = async (object) => { 
+const ifDataDontExists = async (object) => { 
   if (!object) {
-    logger.error('Data not found');
-    throw new NotFoundError('Data not found');
+    logger.error('Product not found');    
+    throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
   }
-  return object;
 }
+
+module.exports = { ifDataExists };

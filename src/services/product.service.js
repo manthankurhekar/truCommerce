@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const { Product } = require('../models');
 const ApiError = require('../utils/ApiError');
+const { ifDataDontExists } = require('../utils/serviceUtil');
 
 const createProduct = async (productBody) => {
   const product = await Product.create(productBody);
@@ -9,17 +10,13 @@ const createProduct = async (productBody) => {
 
 const getProductById = async (id) => {
   const product = await Product.findById(id);
-  if (!product) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
-  }
+  ifDataDontExists(product);
   return product;
 };
 
 const updateProductById = async (productId, updateBody) => {
   const product = await getProductById(productId);
-  if (!product) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
-  }
+  ifDataDontExists(product);
   Object.assign(product, updateBody);
   await product.save();
   return product;
@@ -27,9 +24,7 @@ const updateProductById = async (productId, updateBody) => {
 
 const deleteProductById = async (productId) => {
   const product = await getProductById(productId);
-  if (!product) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
-  }
+  ifDataDontExists(product);
   await product.remove();
   return product;
 };
