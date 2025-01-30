@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const { User } = require('../models');
 const ApiError = require('../utils/ApiError');
+const ifUserDontExists = require('../utils/userUtil');
 
 const createUser = async (userBody) => {
   if (await User.isEmailTaken(userBody.email)) {
@@ -26,10 +27,7 @@ const getUserById = async (id) => {
 
 const updateUserById = async (userId, updateBody) => {
   const user = await getUserById(userId);
-  if (!user) {
-    logger.error('User not found, user.service');
-    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
-  }
+  ifUserDontExists(user);
   if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
     logger.error('Email already taken, user.service');
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
@@ -42,10 +40,7 @@ const updateUserById = async (userId, updateBody) => {
 
 const deleteUserById = async (userId) => {
   const user = await getUserById(userId);
-  if (!user) {
-    logger.error('User not found, user.service');
-    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
-  }
+  ifUserDontExists(user);
   logger.info('User deleted, user.service');
   await user.remove();
   return user;
