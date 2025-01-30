@@ -29,7 +29,9 @@ module.exports = {
     url: envVars.MONGODB_URL
   },
   jwt: {
-    secret: envVars.JWT_SECRET,
-    expirationMinutes: envVars.JWT_EXPIRATION_MINUTES,
+    accessSecret: envVars.JWT_ACESS_SECRET,
+    accessExpirationMinutes: envVars.JWT_ACCESS__EXPIRATION_MINUTES,
+    refreshSecret: envVars.JWT_REFRESH_SECRET, 
+    refreshExpirationDays: envVars.JWT_REFRESH_EXPIRATION_DAYS
   }
 };

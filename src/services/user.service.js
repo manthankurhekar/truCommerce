@@ -12,12 +12,16 @@ const createUser = async (userBody) => {
   return user;
 };
 
+const getUsers = async () => {
+  return await User.find();
+};
+
 const getUserByEmail = async (email) => {
-  return User.findOne({ email });
+  return await User.findOne({ email });
 };
 
 const getUserById = async (id) => {
-  return User.findById(id);
+  return await User.findById(id);
 };
 
 const updateUserById = async (userId, updateBody) => {
@@ -48,6 +52,7 @@ const deleteUserById = async (userId) => {
 };
 
 module.exports = {
+  getUsers,
   createUser,
   getUserByEmail,
   getUserById,

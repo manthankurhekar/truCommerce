@@ -1,6 +1,5 @@
 const httpStatus = require('http-status');
 const { Product } = require('../models');
-const ApiError = require('../utils/ApiError');
 const { ifDataDontExists } = require('../utils/serviceUtil');
 
 const createProduct = async (productBody) => {
