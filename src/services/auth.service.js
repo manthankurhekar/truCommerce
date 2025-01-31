@@ -10,7 +10,7 @@ const loginUserWithEmailAndPassword = async (email, password) => {
   const user = await userService.getUserByEmail(email);
   if (!user || !(await user.isPasswordMatch(password))) {
     logger.error('Incorrect email or password');
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
+    throw new ApiError(httpStatus.status.UNAUTHORIZED, 'Incorrect email or password');
   }
   return user;
 };
@@ -21,7 +21,7 @@ const logout = async (refreshToken) => {
   const refreshTokenDoc = await Token.findOne({ token: refreshToken, type: tokenTypes.REFRESH, blacklisted: false });
   if (!refreshTokenDoc) {
     logger.error('Refresh token not found');
-    throw new ApiError(httpStatus.NOT_FOUND, 'Not found');
+    throw new ApiError(httpStatus.status.NOT_FOUND, 'Not found');
   }
   await refreshTokenDoc.remove();
 };
@@ -39,14 +39,12 @@ const refreshAuth = async (refreshToken) => {
     await refreshTokenDoc.remove();
     return tokenService.generateAuthTokens(user);
   } catch (error) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate');
+    throw new ApiError(httpStatus.status.UNAUTHORIZED, 'Please authenticate');
   }
 };
 
 module.exports = {
   loginUserWithEmailAndPassword,
   logout,
-  refreshAuth,
-  resetPassword,
-  verifyEmail,
+  refreshAuth
 };

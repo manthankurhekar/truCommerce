@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 // we use plugin becuase we don't want __v(version key) or any field marked as private
 // should not be returned in the response, so for these purposes we use plugin
-const { toJson } = require("./plugins/index");
+const { toJSON } = require("./plugins/index");
 const deepEmailValidator = require("deep-email-validator");
 const logger = require("../config/logger");
 
@@ -46,7 +46,7 @@ const userSchema = mongoose.Schema(
   }
 );
 
-userSchema.plugin(toJson);
+userSchema.plugin(toJSON);
 // this is used to compare a given password with the user's stored hashed password to check
 // if they match
 // when we get the object from the database, it has attributes like email, password

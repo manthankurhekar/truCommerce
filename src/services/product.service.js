@@ -1,16 +1,20 @@
-const httpStatus = require('http-status');
-const { Product } = require('../models');
+
+const Product  = require('../models/product.model');
 const { ifDataDontExists } = require('../utils/serviceUtil');
+
+const getProducts = async () => {
+  const products = await Product.find();
+  return products;
+};
 
 const createProduct = async (productBody) => {
   const product = await Product.create(productBody);
-  return product;
+  return ifDataDontExists(product);
 };
 
 const getProductById = async (id) => {
   const product = await Product.findById(id);
-  ifDataDontExists(product);
-  return product;
+  return ifDataDontExists(product);
 };
 
 const updateProductById = async (productId, updateBody) => {
@@ -24,14 +28,14 @@ const updateProductById = async (productId, updateBody) => {
 const deleteProductById = async (productId) => {
   const product = await getProductById(productId);
   ifDataDontExists(product);
-  await product.remove();
+  await product.deleteOne();
   return product;
 };
 
 module.exports = {
   createProduct,
-  queryProducts,
   getProductById,
   updateProductById,
   deleteProductById,
+  getProducts
 };

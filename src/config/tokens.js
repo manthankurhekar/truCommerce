@@ -4,5 +4,5 @@ const tokenTypes = {
   };
   
   module.exports = {
-    tokenTypes,
+    tokenTypes
   };    

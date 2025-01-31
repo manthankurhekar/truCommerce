@@ -86,6 +86,6 @@ const generateAuthTokens = async (user) => {
 module.exports = {
   generateToken,
   saveToken,
-  verifyToken,
+  verifyRefreshToken,
   generateAuthTokens,
 };

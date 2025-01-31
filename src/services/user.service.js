@@ -1,12 +1,12 @@
 const httpStatus = require('http-status');
-const { User } = require('../models');
+const User  = require('../models/user.model');
 const ApiError = require('../utils/ApiError');
 const ifUserDontExists = require('../utils/userUtil');
 
 const createUser = async (userBody) => {
   if (await User.isEmailTaken(userBody.email)) {
     logger.error('Email already taken, user.service');
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
+    throw new ApiError(httpStatus.status.BAD_REQUEST, 'Email already taken');
   }
   logger.info('User created, user.service');
   const user = await User.create(userBody);
@@ -30,7 +30,7 @@ const updateUserById = async (userId, updateBody) => {
   ifUserDontExists(user);
   if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
     logger.error('Email already taken, user.service');
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
+    throw new ApiError(httpStatus.status.BAD_REQUEST, 'Email already taken');
   }
   Object.assign(user, updateBody);
   await user.save();
