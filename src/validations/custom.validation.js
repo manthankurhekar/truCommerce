@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const logger = require('../config/logger');
 
 const objectId = (value, helpers) => {
   if (!mongoose.Types.ObjectId.isValid(value)) {

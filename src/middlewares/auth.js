@@ -1,31 +1,22 @@
-const passport = require('passport');
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
-const { roleRights } = require('../config/roles');
+const jwt = require('jsonwebtoken');
+const logger = require('../config/logger');
+const config = require('../config/config');
+const catchAsync = require("../utils/catchAsync");
+const Token = require('../models/token.model');
 
-const verifyCallback = (req, resolve, reject, requiredRights) => async (err, user, info) => {
-  if (err || info || !user) {
-    return reject(new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate'));
-  }
-  req.user = user;
-
-  if (requiredRights.length) {
-    const userRights = roleRights.get(user.role);
-    const hasRequiredRights = requiredRights.every((requiredRight) => userRights.includes(requiredRight));
-    if (!hasRequiredRights && req.params.userId !== user.id) {
-      return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));
+const auth = () => catchAsync(async (req, res, next) => {
+    const authHeader = req.headers["authorization"];
+    if(!authHeader || !authHeader.startsWith("Bearer")) {
+      throw new ApiError(httpStatus.status.BAD_REQUEST, "Authorization header with jwt missing");
     }
-  }
-
-  resolve();
-};
-
-const auth = (...requiredRights) => async (req, res, next) => {
-  return new Promise((resolve, reject) => {
-    passport.authenticate('jwt', { session: false }, verifyCallback(req, resolve, reject, requiredRights))(req, res, next);
-  })
-    .then(() => next())
-    .catch((err) => next(err));
-};
+    const token = authHeader.split(" ")[1]; // bearer token
+    logger.info(token);
+    const payload = await jwt.verify(token, config.jwt.secret);
+    req.user = payload;
+    logger.info(typeof(req.user.sub));
+    next();
+});
 
 module.exports = auth;

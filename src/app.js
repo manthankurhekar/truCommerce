@@ -1,12 +1,10 @@
 const express = require("express");
 const helmet = require("helmet");
-const passport = require("passport");
 const mongoSanitize = require("express-mongo-sanitize");
 const httpStatus = require("http-status");
 const config = require("./config/config");
 const morgan = require("./config/morgan");
 const routes = require('./routes/v1');
-const { jwtStrategy } = require('./config/passport');
 const { errorConverter, errorHandler } = require("./middlewares/error");
 const ApiError = require("./utils/ApiError");
 
@@ -18,7 +16,7 @@ if (config.env !== "test") {
 }
 
 // set security HTTP headers
-app.use(helmet());
+app.use(helmet()); // sets various httpsHeaders to save attacks like cross-site scripting
 
 // parse json request body
 app.use(express.json());
@@ -27,12 +25,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // sanitize request data
-app.use(mongoSanitize());
-
-
-// jwt authentication
-app.use(passport.initialize());
-passport.use('jwt', jwtStrategy);
+app.use(mongoSanitize()); // used to get security from noSql injection attack
 
 // v1 api routes
 app.use('/v1', routes);

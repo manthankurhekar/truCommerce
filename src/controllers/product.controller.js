@@ -5,7 +5,7 @@ const ApiError = require('../utils/ApiError');
 
 const createProduct = catchAsync(async (req, res) => {
   const product = await productService.createProduct(req.body);
-  res.status(201).send(product);
+  res.status(httpStatus.status.CREATED).send(product);
 });
 
 const getProductById = catchAsync(async (req, res) => {

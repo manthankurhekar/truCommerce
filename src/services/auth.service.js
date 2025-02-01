@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const userService = require('./user.service');
 const ApiError = require('../utils/ApiError');
 const Token = require('../models/token.model');
+const logger = require('../config/logger');
 const { tokenTypes } = require('../config/tokens');
 
 // email and password provide karo and this function will give you the 
@@ -23,7 +24,7 @@ const logout = async (refreshToken) => {
     logger.error('Refresh token not found');
     throw new ApiError(httpStatus.status.NOT_FOUND, 'Not found');
   }
-  await refreshTokenDoc.remove();
+  await refreshTokenDoc.deleteOne();
 };
 
 // accessToken abhi refresh karna h to uske liye refreshToken bhej ke acess token

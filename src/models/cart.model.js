@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const toJSON = require('./plugins/toJSON.plugin')
 
 const cartItemSchema = mongoose.Schema(
   {
@@ -32,7 +33,7 @@ const cartSchema = mongoose.Schema(
   }
 );
 
-// Add plugin that converts mongoose to josn
+// Add plugin that converts mongoose to json
 cartSchema.plugin(toJSON);
 
 const Cart = mongoose.model('Cart', cartSchema);

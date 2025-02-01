@@ -7,3 +7,5 @@ const ifUserDontExists = async (user) => {
         throw new ApiError(httpStatus.status.NOT_FOUND, 'User not found');
     }
 };
+
+module.exports = ifUserDontExists;

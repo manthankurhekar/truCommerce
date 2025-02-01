@@ -9,10 +9,9 @@ const envVarsSchema = Joi.object()
     NODE_ENV: Joi.string().valid('production', 'development', 'test').required(),
     PORT: Joi.number().default(3000),
     MONGODB_URL: Joi.string().required().description('Mongo DB url'),
-    JWT_ACCESS_SECRET: Joi.string().required().description('JWT access secret key'),
-    JWT_ACCESS_EXPIRATION_MINUTES: Joi.number().default(10).description('minutes after which access tokens expire'),
-    JWT_REFRESH_SECRET: Joi.string().required().default('JWT refresh secret key'),
-    JWT_REFRESH_EXPIRATION_DAYS: Joi.number().default(30).description('minutes after which refresh tokens expire')
+    JWT_SECRET: Joi.string().required().description('JWT access secret key'),
+    JWT_ACCESS_EXPIRATION_DAYS: Joi.number().default(30).description('days after which access tokens expire'),
+    JWT_REFRESH_EXPIRATION_DAYS: Joi.number().default(30).description('days after which refresh tokens expire')
     })
   .unknown();
 
@@ -29,9 +28,8 @@ module.exports = {
     url: envVars.MONGODB_URL
   },
   jwt: {
-    accessSecret: envVars.JWT_ACESS_SECRET,
-    accessExpirationMinutes: envVars.JWT_ACCESS__EXPIRATION_MINUTES,
-    refreshSecret: envVars.JWT_REFRESH_SECRET, 
+    secret: envVars.JWT_SECRET,
+    accessExpirationDays: envVars.JWT_ACCESS_EXPIRATION_DAYS,
     refreshExpirationDays: envVars.JWT_REFRESH_EXPIRATION_DAYS
   }
 };
