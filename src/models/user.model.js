@@ -5,10 +5,11 @@ const bcrypt = require("bcryptjs");
 const { toJSON } = require("./plugins/index");
 const deepEmailValidator = require("deep-email-validator");
 const logger = require("../config/logger");
+const allRoles = require("../config/roles");
 
 const validateEmail = async (email) => {
-  const { valid } = await deepEmailValidator.validate(email);
-  if (!valid) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
     logger.error("Model Error: Email is invalid");
     throw new Error("Email is invalid");
   }
@@ -40,6 +41,11 @@ const userSchema = mongoose.Schema(
       },
       private: true, // used by the toJSON plugin
     },
+    role: {
+      type: String,
+      enum: ['user', 'admin'],
+      default: 'user',
+    }
   },
   {
     timestamps: true,

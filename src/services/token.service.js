@@ -6,17 +6,25 @@ const Token  = require("../models/token.model");
 const ApiError = require("../utils/ApiError");
 const { tokenTypes } = require("../config/tokens");
 const logger = require('../config/logger');
+const User = require('../models/user.model');
 
 // ye function basically userId, expiry and (access or refresh) type and secret leke
 // jwt token generate karega
-const generateToken = (userId, expires, type, secret) => {
+const generateToken = async (userId, expires, type, secret) => {
+  try {
+    const user = await User.findById(userId).select('role');
   const payload = {
     sub: userId,
     iat: moment().unix(),
     exp: expires.unix(),
+    role: user.role,
     type,
   };
-  return jwt.sign(payload, secret);
+  return await jwt.sign(payload, secret);
+  } catch(err) {
+    logger.error(err, "Token not generated successfully");
+    throw new Error("500, Internal Server Error");
+  }
 };
 
 // ye function jwt token ko save karega database me because refresh token must be
@@ -24,8 +32,9 @@ const generateToken = (userId, expires, type, secret) => {
 const saveToken = async (token, userId, expires, type, blacklisted = false) => {
   try {
     // logger.info(token, userId, expires, type, blacklisted);
+    const resolvedToken = await token;
     const tokenDoc = await Token.create({
-      token,
+      token: resolvedToken,
       user: userId,
       expires: expires.toDate(),
       type,
@@ -68,9 +77,11 @@ const verifyRefreshToken = async (token, type) => {
 // access localStorage me stored rahega, not in db. refresh db me store hoga
 const generateAuthTokens = async (user) => {
   const accessTokenExpires = moment().add( config.jwt.accessExpirationDays, "days" );
-  const accessToken = generateToken( user.id, accessTokenExpires, tokenTypes.ACCESS, config.jwt.secret );
+  const accessToken = await generateToken( user.id, accessTokenExpires, tokenTypes.ACCESS, config.jwt.secret );
   const refreshTokenExpires = moment().add(config.jwt.refreshExpirationDays, "days");
-  const refreshToken = generateToken( user.id, refreshTokenExpires, tokenTypes.REFRESH, config.jwt.secret );
+  const refreshToken = await generateToken( user.id, refreshTokenExpires, tokenTypes.REFRESH, config.jwt.secret );
+  logger.info(`11 -> ${accessToken}`);
+  logger.info(`22 -> ${accessToken}`);
   await saveToken( refreshToken, user.id, refreshTokenExpires, tokenTypes.REFRESH );
   // throw new Error("Hello");
 

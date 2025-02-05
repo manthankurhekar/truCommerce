@@ -5,8 +5,9 @@ const logger = require('../config/logger');
 const config = require('../config/config');
 const catchAsync = require("../utils/catchAsync");
 const Token = require('../models/token.model');
+const allRoles = require('../config/roles');
 
-const auth = () => catchAsync(async (req, res, next) => {
+const authorizeJwt = () => catchAsync(async (req, res, next) => {
     const authHeader = req.headers["authorization"];
     if(!authHeader || !authHeader.startsWith("Bearer")) {
       throw new ApiError(httpStatus.status.BAD_REQUEST, "Authorization header with jwt missing");
@@ -19,4 +20,22 @@ const auth = () => catchAsync(async (req, res, next) => {
     next();
 });
 
-module.exports = auth;
+const authorizeRoles = (requiredPermissions) => {
+  return catchAsync(async (req, res, next) => {
+    if (!req.user || !req.user.role) {
+      throw new ApiError(httpStatus.status.FORBIDDEN, "Access Denied. No role found");
+    }
+
+    const userRole = req.user.role;
+    const userPermissions = allRoles[userRole] || [];
+    const hasPermission = requiredPermissions.some(permission => userPermissions.includes(permission));
+
+    if (!hasPermission) {
+      throw new ApiError(httpStatus.status.UNAUTHORIZED, "Unauthorized to access the resource");
+    }
+
+    next();
+  });
+};
+
+module.exports = { authorizeJwt, authorizeRoles };

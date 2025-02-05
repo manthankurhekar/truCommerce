@@ -2,18 +2,28 @@ const express = require('express');
 const validate = require('../../middlewares/validate');
 const cartController = require('../../controllers/cart.controller');
 const cartValidation = require('../../validations/cart.validation');
-const auth = require('../../middlewares/auth');
+const  { authorizeJwt, authorizeRoles } = require('../../middlewares/auth');
 
 const router = express.Router();
 
 router 
    .route('/')
-   .post(auth(), validate(cartValidation.addItemsToCart), cartController.addItemsToCart)
-   .delete(auth(), validate(cartValidation.removeItemsFromCart), cartController.removeItemsFromCart);
+   .post(authorizeJwt(), authorizeRoles(['addItemsToCart']), validate(cartValidation.addItemsToCart), cartController.addItemsToCart)
+   .delete(authorizeJwt(), authorizeRoles(['removeItemsFromCart']), validate(cartValidation.removeItemsFromCart), cartController.removeItemsFromCart);
 
 router
     .route('/:userId')
-    .get(auth(), validate(cartValidation.getCart), cartController.getCart)
-    .delete(auth(), validate(cartValidation.clearCart), cartController.clearCart);
+    .get(authorizeJwt(), authorizeRoles(['getCart']), validate(cartValidation.getCart), cartController.getCart)
+    .delete(authorizeJwt(), authorizeRoles(['clearCart']), validate(cartValidation.clearCart), cartController.clearCart);
 
 module.exports = router;
+
+// /cart - post
+// /cart - delete
+
+
+// /cart/products/:itemId - delete - { itemId: xxx, quantity: 123 }
+// /cart/:userId/:itemId - add - { itemId: xxx, quantity: 123 }   
+// /cart/:userId/
+
+// users/:userId/cart/

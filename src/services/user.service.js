@@ -43,7 +43,7 @@ const deleteUserById = async (userId) => {
   const user = await getUserById(userId);
   ifUserDontExists(user);
   logger.info('User deleted, user.service');
-  await user.remove();
+  await user.deleteOne();
   return user;
 };
 

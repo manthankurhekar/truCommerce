@@ -70,9 +70,11 @@ const removeItemsFromCart = async (userId, productId, quantity) => {
 const getCart = async (userId) => {
     // the populate method is used to print the whole details of the product
     // for every corresponding productId
-  const cart = await Cart.findOne({ userId }).populate("products.productId");
+  let cart = await Cart.findOne({ userId }).populate("products.productId");
   if (!cart) {
-    throw new ApiError(httpStatus.status.NOT_FOUND, "Cart not found");
+    cart = new Cart({ userId, products: [] });
+    await cart.save();
+    return cart;
   }
   return cart;
 };
