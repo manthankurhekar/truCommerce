@@ -3,6 +3,7 @@ const userService = require('./user.service');
 const ApiError = require('../utils/ApiError');
 const Token = require('../models/token.model');
 const logger = require('../config/logger');
+const tokenService = require('../services/token.service')
 const { tokenTypes } = require('../config/tokens');
 
 // email and password provide karo and this function will give you the 
